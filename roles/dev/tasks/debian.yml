@@ -1,0 +1,43 @@
+---
+- name: (Ubuntu) Adding Java PPA apt repo
+  apt_repository: repo='ppa:webupd8team/java'
+  become: yes
+  become_method: sudo
+  when: ansible_distribution == 'Ubuntu'
+  tags:
+    - dev
+    - software_packages
+
+- name: (Ubuntu) Adding deadsnakes PPA apt repo (for python 2.6)
+  apt_repository: repo='ppa:fkrull/deadsnakes'
+  become: yes
+  become_method: sudo
+  when: ansible_distribution == 'Ubuntu'
+  tags:
+    - dev
+    - software_packages
+
+- name: (Ubuntu/Debian) Adding/updating packages
+  apt: name="{{item}}"
+       state=latest
+       update_cache=yes
+       dpkg_options='force-confold,force-confdef'
+  become: yes
+  become_method: sudo
+  with_items: "{{apt_packages_common}}"
+  tags:
+    - dev
+    - software_packages
+
+- name: (Ubuntu) Adding/updating unbuntu only packages
+  apt: name="{{item}}"
+       state=latest
+       update_cache=yes
+       dpkg_options='force-confold,force-confdef'
+  become: yes
+  become_method: sudo
+  with_items: "{{apt_packages_ubuntu}}"
+  when: ansible_distribution == 'Ubuntu'
+  tags:
+    - dev
+    - software_packages

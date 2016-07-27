@@ -1,0 +1,37 @@
+---
+weather_location_id: 2518156
+
+apt_packages:
+#- firmware-b43-installer
+- exfat-utils
+- exfat-fuse
+- network-manager-vpnc
+- xclip
+- rpcbind
+- nfs-common
+- autofs
+- hfsplus
+
+brew_packages:
+- ansible
+- freetype
+- wget
+- tmux
+- macvim
+- archey
+- coreutils
+- openssl
+- stoken
+- iperf3
+- git
+- bash-completion
+
+yum_dnf_packages: []
+
+rpm_fusion_packages:
+- exfat-utils
+- fuse-exfat
+- xclip
+- rpcbind
+- nfs-utils
+- autofs

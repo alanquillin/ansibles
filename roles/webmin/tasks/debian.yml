@@ -1,0 +1,33 @@
+- name: Add webmin repo
+  apt_repository: repo='deb http://download.webmin.com/download/repository sarge contrib'
+                  update_cache=yes
+  become: yes
+  become_method: sudo
+  tags:
+    - webmin
+
+- name: Add webmin mirror repo
+  apt_repository: repo='deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib'
+                  update_cache=yes
+  become: yes
+  become_method: sudo
+  tags:
+    - webmin
+
+- name: Add webmin apy key
+  apt_key: url=http://www.webmin.com/jcameron-key.asc
+           state=present
+  become: yes
+  become_method: sudo
+  tags:
+    - webmin
+
+- name: Install webmin
+  apt: pkg=webmin
+       state=latest
+       update_cache=yes
+       dpkg_options='force-confold,force-confdef'
+  become: yes
+  become_method: sudo
+  tags:
+    - webmin

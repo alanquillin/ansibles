@@ -1,0 +1,22 @@
+---
+- name: Create new user
+  user: name={{ new_username }}
+        password={{ new_password |password_hash('sha512') }}
+        state=present
+        update_password=on_create
+        shell=/bin/bash
+  become: yes
+  become_method: sudo
+  tags:
+    - create_user
+
+- name: Copy sudoer dropin file
+  template: src=sudoers_dropin.j2
+            dest=/etc/sudoers.d/{{ username }}
+            owner=root
+            group=root
+            mode="0600"
+  become: yes
+  become_method: sudo
+  tags:
+    - add_sudoer

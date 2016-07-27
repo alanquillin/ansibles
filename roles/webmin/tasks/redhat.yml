@@ -1,0 +1,70 @@
+---
+#- name: Add repository
+#  yum_repository:
+#    name: Webmin Distribution Neutral
+#    description: EPEL YUM repo
+#    baseurl: http://download.webmin.com/download/yum
+#    mirrorlist: http://download.webmin.com/download/yum/mirrorlist
+#    gpgkey: http://www.webmin.com/jcameron-key.asc
+#  become: yes
+#  become_method: sudo
+#  tags:
+#    - webmin
+#
+#- name: Install webmin
+#  dnf: name=webmin
+#  become: yes
+#  become_method: sudo
+#  when: ansible_pkg_mgr == 'dnf'
+#  tags:
+#    - webmin
+#
+#- name: Install webmin
+#  yum: name=webmin
+#  become: yes
+#  become_method: sudo
+#  when: ansible_pkg_mgr == 'yum'
+#  tags:
+#    - webmin
+
+- name: Install dependencies via dnf
+  dnf: name={{ item }}
+  with_items:
+    - perl
+    - perl-Net-SSLeay
+    - openssl
+    - perl-IO-Tty
+  become: yes
+  become_method: sudo
+  when: ansible_pkg_mgr == 'dnf'
+  tags:
+    - webmin
+
+- name: Install webmin via dnf
+  dnf: name="http://prdownloads.sourceforge.net/webadmin/webmin-1.801-1.noarch.rpm"
+  become: yes
+  become_method: sudo
+  when: ansible_pkg_mgr == 'dnf'
+  tags:
+    - webmin
+
+- name: Install dependencies via yum
+  yum: name={{ item }}
+  with_items:
+    - perl
+    - perl-Net-SSLeay
+    - openssl
+    - perl-IO-Tty
+  become: yes
+  become_method: sudo
+  when: ansible_pkg_mgr == 'yum'
+  tags:
+    - webmin
+
+- name: Install webmin via yum
+  yum: name="http://prdownloads.sourceforge.net/webadmin/webmin-1.801-1.noarch.rpm"
+  become: yes
+  become_method: sudo
+  when: ansible_pkg_mgr == 'yum'
+  tags:
+    - webmin

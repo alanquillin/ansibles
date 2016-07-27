@@ -1,0 +1,26 @@
+---
+- name: Download smartgit .deb package
+  get_url: url=http://www.syntevo.com/static/smart/download/smartgit/smartgit-7_1_3.deb
+           dest=/tmp/smartgit.deb
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - smartgit
+
+- name: Install smartgit .deb package
+  apt: deb=/tmp/smartgit.deb
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - smartgit
+
+- name: Cleanup smartgit .deb file
+  file: path=/tmp/smartgit.deb
+        state=absent
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - smartgit

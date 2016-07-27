@@ -1,0 +1,59 @@
+---
+- name: (Fedora) Add rpmfusion via dnf
+  dnf: name="http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ansible_distribution_major_version}}.noarch.rpm"
+  become: yes
+  become_method: sudo
+  when: (ansible_distribution == 'Fedora' and ansible_pkg_mgr == 'dnf')
+  tags:
+    - common_local
+    - software_packages
+
+- name: (Fedora) Add rpmfusion packages via dnf
+  dnf: name={{ item }}
+  with_items: "{{rpm_fusion_packages}}"
+  become: yes
+  become_method: sudo
+  when: (ansible_distribution == 'Fedora' and ansible_pkg_mgr == 'dnf')
+  tags:
+    - common_local
+    - software_packages
+
+- name: Install required packages via dnf
+  dnf: name={{item}}
+  with_items: "{{yum_dnf_packages}}"
+  become: yes
+  become_method: sudo
+  when: ansible_pkg_mgr == 'dnf'
+  tags:
+    - common_local
+    - software_packages
+
+- name: (Fedora) Add rpmfusion via yum
+  yum: name="http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ansible_distribution_major_version}}.noarch.rpm"
+       disable_gpg_check=yes
+  become: yes
+  become_method: sudo
+  when: (ansible_distribution == 'Fedora' and ansible_pkg_mgr == 'yum')
+  tags:
+    - common_local
+    - software_packages
+
+- name: (Fedora) Add rpmfusion packages via yum
+  yum: name={{ item }}
+  with_items: "{{rpm_fusion_packages}}"
+  become: yes
+  become_method: sudo
+  when: (ansible_distribution == 'Fedora' and ansible_pkg_mgr == 'yum')
+  tags:
+    - common_local
+    - software_packages
+
+- name: Install required packages via yum
+  yum: name={{item}}
+  with_items: "{{yum_dnf_packages}}"
+  become: yes
+  become_method: sudo
+  when: ansible_pkg_mgr == 'yum'
+  tags:
+    - common_local
+    - software_packages

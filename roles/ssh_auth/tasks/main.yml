@@ -1,0 +1,42 @@
+---
+- name: Add authorized keys to current user
+  authorized_key: user={{ username }}
+                  key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+                  state=present
+  become: yes
+  become_user: "{{ username }}"
+  when: not (ansible_domain == 'local')
+  tags:
+    - ssh_auth
+    - authorized_keys
+
+- name: Copying over private key
+  copy: src=~/.ssh/id_rsa
+        dest=~/.ssh/id_rsa
+        mode=0600
+  become: yes
+  become_user: "{{ username }}"
+  when: not (ansible_domain == 'local')
+  tags:
+    - ssh_auth
+    - private_keys
+
+- name: Copying over public key
+  copy: src=~/.ssh/id_rsa.pub
+        dest=~/.ssh/id_rsa.pub
+        mode=0600
+  become: yes
+  become_user: "{{ username }}"
+  when: not (ansible_domain == 'local')
+  tags:
+    - ssh_auth
+    - public_keys
+
+- name: Adding user to /etc/sudoer file to allow nopasswd
+  lineinfile: dest=/etc/sudoers line="{{ username }} ALL=(ALL) NOPASSWD:ALL"
+              state=present
+  become: yes
+  become_method: sudo
+  tags:
+    - ssh_auth
+    - sudoer_creds

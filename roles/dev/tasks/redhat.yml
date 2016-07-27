@@ -1,0 +1,20 @@
+---
+- name: Install required packages (Fedora 22 or greater)
+  dnf: name={{item}}
+  with_items: "{{yum_dnf_packages}}"
+  become: yes
+  become_method: sudo
+  when: "{{ansible_distribution_major_version|int}} >= 22"
+  tags:
+    - dev
+    - software_packages
+
+- name: Install required packages (Fedora 21 or less)
+  yum: name={{item}}
+  with_items: "{{yum_dnf_packages}}"
+  become: yes
+  become_method: sudo
+  when: "{{ansible_distribution_major_version|int}} < 22"
+  tags:
+    - dev
+    - software_packages

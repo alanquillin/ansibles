@@ -1,0 +1,82 @@
+---
+get_pycharm_pro: true
+backup_pycharm: true
+backup_smartgit: true
+pycharm_ver: 2016.1.3
+
+apt_packages_common:
+  - libxml2-dev
+  - libxslt1-dev
+  - zlib1g-dev
+  - python-dev
+  - python3-dev
+  - openjdk-8-jdk
+  - wireshark
+  - packeth
+  - mysql-server
+  - mysql-workbench
+  - ansible
+  - ipython
+  - build-essential
+  - cmake
+  - libmysqlclient-dev
+  - libpq-dev
+  - python-mysqldb
+  - libkrb5-dev
+  - bash-completion
+
+apt_packages_ubuntu:
+  - mininet
+  - python2.6
+  - python2.6-dev
+
+
+yum_dnf_packages:
+  - libxml2-devel
+  - libxslt-devel
+  - python-devel
+  - java-1.8.0-openjdk
+  - wireshark
+  - packETH
+  - mysql-server
+  - ansible
+  - ipython
+  - automake
+  - gcc
+  - gcc-c++
+  - kernel-devel
+  - cmake
+  - zlib-devel
+  - mariadb
+  - MySQL-python
+  - krb5-devel
+  - krb5-libs
+  - krb5-workstation
+  - bash-completion
+
+pip_dep:
+  - virtualenv
+  - tox
+  - flake8
+  - hgtools
+  - ansible
+  - keyring
+  - pywinrm>=0.1.1
+  - kerberos
+
+homebrew_packages:
+  - git
+  - mariadb
+  - node
+  - python
+  - redis
+  - sqlite
+
+gister_pip_dep:
+  - keyring
+  - hgtools
+
+gister_dir: "{{workspace_dir}}/gister"
+
+redis_port: 6379
+redis_password: mypass

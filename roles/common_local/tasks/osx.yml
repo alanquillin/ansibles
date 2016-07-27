@@ -1,0 +1,55 @@
+---
+- name: (OSX) Copying .bash_profile (which will source .bashrc.j2)
+  copy: src=.bash_profile
+        dest=~/.bash_profile
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - common_local
+    - software_packages
+    - config
+    - dot_files
+
+- stat: path=/usr/local/bin/brew
+  register: brew_stats
+  tags:
+    - common_local
+    - software_packages
+
+- name: (OSX) Install Homebrew
+  shell: ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  when: brew_stats.stat.exists == False
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - common_local
+    - software_packages
+
+- name: (OSX) Upgrade homebrew
+  homebrew: update_homebrew=yes
+  when: ansible_pkg_mgr == "homebrew"
+
+- name: (OSX) Install homebrew packages
+  homebrew: name="{{item}}"
+            state=latest
+  with_items: "{{brew_packages}}"
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - common_local
+    - software_packages
+
+- name: (OSX) Update homebrew packages
+  homebrew: update_homebrew=no upgrade_all=yes
+  register: homebrew_version_results
+  ignore_errors: True
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - common_local
+    - software_packages
+
+- debug: msg="{{ homebrew_version_results }}"
+  tags:
+    - common_local
+    - software_packages

@@ -1,0 +1,126 @@
+---
+- name: Checking if pycharm directory already exists
+  stat: path=/opt/pycharm
+  register: pycharm_stats
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - pycharm
+
+- name: Checking if old pycharm backup directory exists
+  stat: path=/opt/pycharm_bck
+  register: pycharm_bck_stats
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - pycharm
+
+- name: Remove old pycharm backup directory (if it exists)
+  file: path=/opt/pycharm_bck
+        state=absent
+  become: yes
+  become_method: sudo
+  when: pycharm_bck_stats.stat.exists == True
+  tags:
+    - dev
+    - pycharm
+
+- name: Backup old pycharm directory (if it exists)
+  file: src=/opt/pycharm
+        dest=/opt/pycharm_bck
+        state=directory
+  become: yes
+  become_method: sudo
+  when: pycharm_stats.stat.exists == True and backup_pycharm == True
+  tags:
+    - dev
+    - pycharm
+
+- name: Remove old pycharm directory (if it exists)
+  file: path=/opt/pycharm
+        state=absent
+  become: yes
+  become_method: sudo
+  when: pycharm_stats.stat.exists == True
+  tags:
+    - dev
+    - pycharm
+
+- name: Downloading pycharm community
+  get_url: url=https://download.jetbrains.com/python/pycharm-community-{{pycharm_ver}}.tar.gz
+           dest=/opt/pycharm.tar.gz
+  become: yes
+  become_method: sudo
+  when: get_pycharm_pro == False
+  tags:
+    - dev
+    - pycharm
+
+- name: Downloading pycharm professional
+  get_url: url=https://download.jetbrains.com/python/pycharm-professional-{{pycharm_ver}}.tar.gz
+           dest=/opt/pycharm.tar.gz
+  become: yes
+  become_method: sudo
+  when: get_pycharm_pro == True
+  tags:
+    - dev
+    - pycharm
+
+- name: Extract pycharm
+  unarchive: src=/opt/pycharm.tar.gz
+             dest=/opt
+             copy=false
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - pycharm
+
+- name: Renaming pycharm directory
+  command: mv pycharm-{{pycharm_ver}} pycharm
+  args:
+    chdir: /opt
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - pycharm
+
+- name: Set pycharm directory mode and owner
+  file: path=/opt/pycharm
+        mode=0755
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - pycharm
+
+- name: Set pycharm directory owner (recursive)
+  file: path=/opt/pycharm
+        owner={{ username }}
+        recurse=yes
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - pycharm
+
+- name: Remove downloaded pycharm archive file
+  file: path=/opt/pycharm.tar.gz
+        state=absent
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - pycharm
+
+- name: (Ubuntu) Update Certificates for pycharm registration
+  command: update-ca-certificates -f
+  become: yes
+  become_method: sudo
+  when: ansible_distribution == 'Ubuntu'
+  tags:
+    - dev
+    - pycharm

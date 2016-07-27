@@ -1,0 +1,19 @@
+---
+- hosts: all
+  vars_prompt:
+    - name: "git_user_real_name"
+      prompt: "Real Name (git config)"
+      private: false
+      default: "Alan Quillin"
+    - name: "git_email"
+      prompt: "Email (git config)"
+      private: false
+      default: "alanquillin@gmail.com"
+    - name: "github_user"
+      prompt: "Public github username"
+      private: false
+      default: "alanquillin"
+  roles:
+    - ssh_auth
+    - common_local
+    - dev

@@ -1,0 +1,27 @@
+---
+weather_location_id: 2518156
+
+apt_packages:
+- tmux
+- python-pip
+- git
+- vim
+- curl
+- ipython
+
+dot_files:
+- .bash_extended
+- .gitignore_global
+- .tmux.conf
+- .bash_aliases
+
+dot_files_templates:
+- .bashrc
+- .gitconfig
+
+yum_dnf_packages:
+- tmux
+- python-pip
+- git
+- vim
+- curl

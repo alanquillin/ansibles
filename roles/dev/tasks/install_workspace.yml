@@ -1,0 +1,12 @@
+---
+
+- name: Add Workspace bash variable to .bashrc
+  lineinfile: dest=~/.bashrc
+              line='WORKSPACE="{{ workspace_dir }}"'
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - workspace
+    - config
+    - dot_files

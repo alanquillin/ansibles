@@ -1,0 +1,50 @@
+---
+#- find: paths=~/.vimrc
+#  register: vimrc_exists
+
+- name: Copy .vimrc file (if one does not already exist)
+  copy: src=.vimrc
+        dest=~/.vimrc
+#  when: vimrc_exists.matched > 0
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - youcompleteme
+
+- name: Adding YouCompleteMe plugin to .vimrc
+  lineinfile: dest=~/.vimrc
+              line="Plugin 'Valloric/YouCompleteMe'"
+              insertbefore="call vundle#end()"
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - youcompleteme
+
+- name: Cloning Vundle
+  git: repo=https://github.com/VundleVim/Vundle.vim.git
+       dest=~/.vim/bundle/Vundle.vim
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - youcompleteme
+
+- name: Confinure Vim bundles
+  command: vim +PluginInstall +qall
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - youcompleteme
+
+- name: Building the YouCompleteMe binary
+  shell: ./install.sh
+  args:
+    chdir: ~/.vim/bundle/YouCompleteMe
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - youcompleteme

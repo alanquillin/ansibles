@@ -1,0 +1,81 @@
+---
+- name: Importing templates dot files
+  template: src={{item}}.j2
+            dest=~/{{item}}
+            force=true
+  with_items: "{{dot_files_templates}}"
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - common
+    - config
+    - dot_files
+
+- name: Importing dot files
+  copy: src={{item}}
+        dest=~/{{item}}
+  with_items: "{{dot_files}}"
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - common
+    - config
+    - dot_files
+
+- name: Importing git-completion.bash from source
+  get_url: url=https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash
+           dest=~/.git-completion.bash
+           force=yes
+           backup=yes
+  become: yes
+  become_user: "{{ username }}"
+  register: git_completion_downloaded
+  ignore_errors: True
+  tags:
+    - common
+    - config
+    - dot_files
+
+- debug: msg="{{ git_completion_downloaded }}"
+  tags:
+    - common
+    - config
+    - dot_files
+
+- name: Copy cache version of .git-completion.bash (if pulling from source failed)
+  copy: src=.git-completion.bash
+        dest=~/.git-completion.bash
+        force=no
+  become: yes
+  become_user: "{{ username }}"
+  when: git_completion_downloaded|failed
+  tags:
+    - common
+    - config
+    - dot_files
+
+- name: Importing git-prompt.sh from source
+  get_url: url=https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+           dest=~/.git-prompt.sh
+           force=yes
+           backup=yes
+  become: yes
+  become_user: "{{ username }}"
+  register: git_prompt_downloaded
+  ignore_errors: True
+  tags:
+    - common
+    - config
+    - dot_files
+
+- name: Copy cache version of .git-prompt.sh (if pulling from source failed)
+  copy: src=.git-prompt.sh
+        dest=~/.git-prompt.sh
+        force=no
+  become: yes
+  become_user: "{{ username }}"
+  when: git_prompt_downloaded|failed
+  tags:
+    - common
+    - config
+    - dot_files

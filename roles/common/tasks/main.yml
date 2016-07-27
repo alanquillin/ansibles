@@ -1,0 +1,9 @@
+---
+- include: import_dot_files.yml
+  when: (ansible_system == 'Linux' or ansible_system == 'Darwin')
+
+- include: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include: redhat.yml
+  when: ansible_os_family == 'RedHat'

@@ -1,0 +1,19 @@
+---
+- name: (Debian) Upgrade all existing packages
+  apt: upgrade=dist
+  become: yes
+  become_method: sudo
+  tags:
+    - common_local
+    - software_packages
+
+- name: (Debian) Adding/updating packages
+  apt: name="{{item}}"
+       state=latest
+       update_cache=yes
+  with_items: "{{apt_packages}}"
+  become: yes
+  become_method: sudo
+  tags:
+    - common_local
+    - software_packages

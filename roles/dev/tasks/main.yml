@@ -1,0 +1,50 @@
+---
+- include: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include: osx.yml
+  when: ansible_distribution == 'MacOSX'
+
+- include: redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: Update pip
+  pip: name=pip
+       state=latest
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - software_packages
+
+- name: Install pip packages
+  pip: name="{{item}}"
+  with_items: "{{pip_dep}}"
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - software_packages
+
+- include: install_workspace.yml
+
+- include: install_youcompleteme.yml
+  when: ansible_system == 'Linux'
+
+- include: install_pycharm.yml
+  when: ansible_system == 'Linux'
+
+- include: install_smartgit_manual.yml
+  when: (ansible_system == 'Linux' and ansible_os_family != 'Debian')
+
+- include: install_smartgit_deb.yml
+  when: ansible_os_family == 'Debian'
+
+- include: install_gister.yml
+  when: (ansible_system == 'Linux' or ansible_system == 'Darwin')
+
+- include: install_powerline.yml
+  when: (ansible_system == 'Linux' or ansible_system == 'Darwin')
+
+- include: install_redis.yml
+  when: (ansible_system == 'Linux')

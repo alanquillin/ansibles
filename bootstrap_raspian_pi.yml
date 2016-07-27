@@ -1,0 +1,20 @@
+---
+- hosts: all
+  vars_prompt:
+    - name: "new_hostname"
+      prompt: "Hostname"
+      private: false
+    - name: "new_ip_address"
+      prompt: "IP Address [Format: 192.168.1.1/24]"
+      private: false
+    - name: "new_username"
+      prompt: "New Username"
+      private: false
+      default: "alanquillin"
+    - name: "new_password"
+      prompt: "New password"
+      private: true
+  roles:
+    - { role: create_user }
+    - { role: raspian }
+    - { role: common }

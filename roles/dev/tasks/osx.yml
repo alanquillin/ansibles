@@ -1,0 +1,19 @@
+---
+- name: (OSX) Ensure configured homebrew packages are installed.
+  homebrew: "name={{ item }} state=present"
+  with_items: "{{homebrew_packages}}"
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - software_packages
+    - homebrew
+
+- name: (OSX) Upgrade all homebrew packages (if configured).
+  homebrew: update_homebrew=yes upgrade_all=yes
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - software_packages
+    - homebrew

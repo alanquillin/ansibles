@@ -1,0 +1,99 @@
+#!/bin/bash
+
+#------------------------------------------////
+# Functions and Scripts:
+#------------------------------------------////
+parse_git_branch() {
+      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+parse_git_prompt() {
+        if [[ $(git status 2> /dev/null | tail -n1) != "" ]]
+           then
+                if [[ ($(git status 2> /dev/null | tail -n1) == "nothing to commit, working directory clean") ||
+                ($(git status 2> /dev/null | tail -n1) == "nothing to commit (working directory clean)") ]]
+                   then
+                       echo $GREEN$(__git_ps1)
+                   else
+                       echo $MAGENTA$(__git_ps1)"*"
+                fi
+        fi
+}
+
+localnet ()
+{
+	/sbin/ifconfig | awk /'inet addr/ {print $2}' 
+	/sbin/ifconfig | awk /'Bcast/ {print $3}' 
+	echo ""
+}
+
+myip ()
+{
+	lynx -dump -hiddenlinks=ignore -nolist [url]http://checkip.dyndns.org:8245/[/url] | grep "Current IP Address" | cut -d":" -f2 | cut -d" " -f2
+}
+
+#weather ()
+#{
+	#declare -a WEATHERARRAY
+	#WEATHERARRAY=( `lynx -dump 
+	#"[url]http://www.google.com/search?hl=en&lr=&client=firefox-a&rls=org.mozilla_en-US_official&q=weather+${1}&btnG=Search[/url]" | 
+	#grep -A 5 -m 1 "Weather for" | sed 's;\[26\]Add to iGoogle\[27\]IMG;;g'`)
+	#echo ${WEATHERARRAY[@]}
+#}
+
+encrypt ()
+{
+	gpg -ac --no-options "$1"
+}
+
+decrypt ()
+{
+	gpg --no-options "$1"
+}
+
+extract()
+{
+	if [ -f "$1" ] ; then
+	    case "$1" in
+		*.tar.bz2) tar xjf "$1" ;;
+		*.tar.gz) tar xzf "$1" ;;
+		*.tar.Z) tar xzf "$1" ;;
+		*.bz2) bunzip2 "$1" ;;
+		*.rar) unrar x "$1" ;;
+		*.gz) gunzip "$1" ;;
+		*.jar) unzip "$1" ;;
+		*.tar) tar xf "$1" ;;
+		*.tbz2) tar xjf "$1" ;;
+		*.tgz) tar xzf "$1" ;;
+		*.zip) unzip "$1" ;;
+		*.Z) uncompress "$1" ;;
+	    *) echo "'$1' cannot be extracted." ;;
+	    esac
+	else
+	    echo "'$1' is not a file."
+	fi
+}
+
+ip_to_int()
+{
+	python -c 'from netaddr import IPAddress; print int(IPAddress("'$1'"))'
+	echo ""
+}
+
+int_to_ip()
+{
+	python -c 'from netaddr import IPAddress; print str(IPAddress("'$1'"))'
+	echo ""
+}
+
+ip_to_hex()
+{
+	python -c 'from netaddr import IPAddress; print hex(int(IPAddress("'$1'")))'
+	echo ""
+}
+
+hex_to_ip()
+{
+	python -c 'from netaddr import IPAddress; print str(IPAddress(int("'$1'",16)))'
+	echo ""
+}

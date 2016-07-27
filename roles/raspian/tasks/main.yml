@@ -1,0 +1,88 @@
+---
+- name: Upgrade all existing packages
+  apt: upgrade=dist
+  become: yes
+  become_method: sudo
+
+- name: Adding/updating packages
+  apt: name="{{item}}"
+       state=latest
+       update_cache=yes
+  with_items: "{{apt_packages}}"
+  become: yes
+  become_method: sudo
+
+- name: Set hostname
+  hostname: name="{{ new_hostname }}"
+  become: yes
+  become_method: sudo
+
+- name: Set static ip address (replace /etc/dhcpcd.conf)
+  template: src=etc_dhcpcd.conf.j2
+            dest=/etc/dhcpcd.conf
+            backup=yes
+  become: yes
+  become_method: sudo
+
+- name: Create new user group
+  group: state=present
+         name={{ new_username }}
+  become: yes
+  become_method: sudo
+
+- name: Create new user
+  user: name={{ new_username }}
+        group={{ new_username }}
+        groups=adm,dialout,sudo,audio,video,plugdev,users,input,netdev,spi,i2c,gpio
+  become: yes
+  become_method: sudo
+
+- name: Add authorized keys to current user
+  authorized_key: user={{ new_username }}
+                  key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+                  state=present
+  tags:
+    - authorized_keys
+  become: yes
+  become_user: "{{ new_username }}"
+
+- name: Copying over private key
+  copy: src=~/.ssh/id_rsa
+        dest=/home/{{ new_username }}/.ssh/id_rsa
+        mode=0600
+  tags:
+    - private_keys
+  become: yes
+  become_method: sudo
+
+- name: Copying over public key
+  copy: src=~/.ssh/id_rsa.pub
+        dest=/home/{{ new_username }}/.ssh/id_rsa.pub
+        mode=0600
+  tags:
+    - public_keys
+  become: yes
+  become_method: sudo
+
+- name: Adding new user to /etc/sudoer file to allow nopasswd
+  lineinfile: dest=/etc/sudoers line="{{ new_username }} ALL=(ALL) NOPASSWD:ALL"
+              state=present
+  become: yes
+  become_method: sudo
+
+- name: Create a file vncserver in /etc/init.d/ directory
+  copy: src=vncboot dest=/etc/init.d/vncserver owner=root group=root mode=0755
+  register: vnc_service
+  become: yes
+  become_method: sudo
+#
+#- name: Add vncserver service to default runlevels
+#  command: update-rc.d vncserver defaults
+#  when: vnc_service.changed
+#  become: yes
+#  become_method: sudo
+#
+#- name: Restart VNC Service
+#  command: /etc/init.d/vncserver start
+#  become: yes
+#  become_method: sudo

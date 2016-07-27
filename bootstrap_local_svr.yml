@@ -1,0 +1,6 @@
+---
+- hosts: all
+  roles:
+    - { role: ssh_auth }
+    - { role: common_local }
+    - { role: webmin }

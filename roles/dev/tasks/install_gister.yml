@@ -1,0 +1,28 @@
+---
+- name: Installing gister pip dependencies
+  pip: name="{{item}}"
+  with_items: "{{gister_pip_dep}}"
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - gister
+
+- name: Cloning gister repo
+  git: repo=https://github.com/tr3buchet/gister.git
+       dest="{{gister_dir}}"
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - gister
+
+- name: Installing gister
+  shell: python setup.py install
+  args:
+    chdir: "{{gister_dir}}"
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - gister

@@ -1,0 +1,148 @@
+- name: Install redis dependency packages
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - make
+    - build-essential
+    - tcl8.5
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Download latest stable redis
+  get_url: url=http://download.redis.io/releases/redis-stable.tar.gz
+           dest=/tmp/redis-stable.tar.gz
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - redis
+
+- name: Extract redis to /tmp
+  unarchive: src=/tmp/redis-stable.tar.gz
+             dest=/tmp
+             copy=false
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - redis
+
+- name: Build redis
+  command: make -C /tmp/redis-stable
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - redis
+
+- name: Make sure that /etc/redis exists
+  file: path=/etc/redis
+        state=directory
+        mode=0755
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Make sure that /var/redis exists
+  file: path=/var/redis
+        state=directory
+        mode=0755
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Make sure that /var/redis/6379 exists
+  file: path=/var/redis/6379
+        state=directory
+        mode=0755
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Make sure redis.log file exists
+  file: path=/var/log/redis.log
+        state=touch
+        mode=0644
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Copy service init.d file
+  copy: src=files/redis/redis_6379
+        dest=/etc/init.d/redis_6379
+        mode=0755
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Copy redis.conf file (6379.conf)
+  copy: src=files/redis/6379.conf
+        dest=/etc/redis/6379.conf
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Copy sentinel conf file
+  copy: src=files/redis/sentinel.conf
+        dest=/etc/redis/sentinel.conf
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Copy redis binaries
+  command: cp /tmp/redis-stable/src/{{ item }} /usr/local/bin
+  with_items:
+    - redis-server
+    - redis-cli
+    - redis-sentinel
+    - redis-benchmark
+    - redis-check-aof
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Cleaning up redis build files
+  command: rm -rf /tmp/{{ item }}
+  with_items:
+    - redis-stable
+    - redis-stable.tar.gz
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+    - clean_redis_install
+
+- name: Add redis init script to all default run levels
+  command: update-rc.d redis_6379 defaults
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis
+
+- name: Restart redis service
+  command: /etc/init.d/redis_6379 restart
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - redis

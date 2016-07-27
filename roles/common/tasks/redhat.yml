@@ -1,0 +1,21 @@
+---
+- name: Install required packages (dnf)
+  dnf: name={{item}}
+  with_items: "{{yum_dnf_packages}}"
+  become: yes
+  become_method: sudo
+  when: ansible_pkg_mgr == 'dnf'
+  tags:
+    - common
+    - software_packages
+
+
+- name: Install required packages (yum)
+  yum: name={{item}}
+  with_items: "{{yum_dnf_packages}}"
+  become: yes
+  become_method: sudo
+  when: ansible_pkg_mgr == 'yum'
+  tags:
+    - common
+    - software_packages

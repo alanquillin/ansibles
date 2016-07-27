@@ -1,0 +1,106 @@
+---
+- name: Check if smartgit directory already exists
+  stat: path=/opt/smartgit
+  register: smartgit_stats
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - smartgit
+
+- name: Check if smartgit backup directory already exists
+  stat: path=/opt/pycharm_bck
+  register: smartgit_bck_stats
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - smartgit
+
+- name: Remove old smartgit backup directory (if it exists)
+  file: path=/opt/smartgit_bck
+        state=absent
+  become: yes
+  become_method: sudo
+  when: smartgit_bck_stats.stat.exists == True
+  tags:
+    - dev
+    - smartgit
+
+- name: Backup old smartgit directory (if it exists)
+  file: src=/opt/smartgit
+        dest=/opt/smartgit_bck
+        state=directory
+  become: yes
+  become_method: sudo
+  when: smartgit_stats.stat.exists == True and backup_smartgit == True
+  tags:
+    - dev
+    - smartgit
+
+- name: Remove old smartgit directory (if it exists)
+  file: path=/opt/smartgit
+        state=absent
+  become: yes
+  become_method: sudo
+  when: smartgit_stats.stat.exists == True
+  tags:
+    - dev
+    - smartgit
+
+- name: Downloading smartgit
+  get_url: url=http://www.syntevo.com/static/smart/download/smartgit/smartgit-linux-7_1_3.tar.gz
+           dest=/opt/smartgit.tar.gz
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - smartgit
+
+- name: Extract smartgit
+  unarchive: src=/opt/smartgit.tar.gz
+             dest=/opt
+             copy=false
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - smartgit
+
+- name: Set smartgit directory mode
+  file: path=/opt/smartgit
+        mode=0755
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - smartgit
+
+- name: Set smartgit directory owner (recursive)
+  file: path=/opt/smartgit
+        owner={{ alanquillin }}
+        recurse=yes
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - smartgit
+
+- name: Remove downloaded smartgit archive file
+  file: path=/opt/smartgit.tar.gz
+        state=absent
+  become: yes
+  become_method: sudo
+  tags:
+    - dev
+    - smartgit
+
+- name: Adding smartgit to menu
+  shell: ./add-menuitem.sh
+  args:
+    chdir: /opt/smartgit/bin
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - smartgit

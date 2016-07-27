@@ -1,0 +1,77 @@
+---
+- name: Pip install Powerline-status
+  pip: name=powerline-status
+       extra_args='--user'
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - powerline
+
+- name: Set ~/.fonts directory for powerline
+  file: path=~/.fonts
+        mode=0775
+        state=directory
+        owner={{ username }}
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - powerline
+
+- name: Download PowerlineSymbols.otf
+  get_url: url=https://github.com/Lokaltog/powerline/raw/develop/font/PowerlineSymbols.otf
+           dest=~/.fonts/PowerlineSymbols.otf
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - powerline
+
+- name: Update font cache for powerline
+  command: fc-cache -vf ~/.fonts
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - powerline
+
+- name: Set ~/.config/fontconfig/conf.d directory for powerline
+  file: path=~/.config/fontconfig/conf.d
+        mode=0775
+        state=directory
+        owner={{ username }}
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - powerline
+
+- name: Download powerline 10-powerline-symbols.conf
+  get_url: url=https://github.com/Lokaltog/powerline/raw/develop/font/10-powerline-symbols.conf
+           dest=~/.config/fontconfig/conf.d/10-powerline-symbols.conf
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - powerline
+
+- name: Add powerline to .tmux.conf (Linux)
+  lineinfile: dest=~/.tmux.conf
+              line="source ~/.local/lib/python2.7/site-packages/powerline/bindings/tmux/powerline.conf"
+  when: ansible_distribution != 'MacOSX'
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - powerline
+
+- name: Add powerline to .tmux.conf (OSX)
+  lineinfile: dest=~/.tmux.conf
+              line="source ~/Library/Python/2.7/lib/python/site-packages/powerline/bindings/tmux/powerline.conf"
+  when: ansible_distribution == 'MacOSX'
+  become: yes
+  become_user: "{{ username }}"
+  tags:
+    - dev
+    - powerline

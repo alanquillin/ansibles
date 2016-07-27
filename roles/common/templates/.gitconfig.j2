@@ -1,0 +1,23 @@
+[color]
+    interactive = true
+
+[alias]
+	last = log -1 HEAD
+	latest = !git checkout master && git fetch upstream && git rebase upstream/master && git push origin master
+	squash = !git rebase -i master
+	dbranch = !git checkout master && git push origin :${1} && git branch -D ${1}
+	dbranchu = !git checkout master && git push upstream :${1}
+	aa = !git add . && git add -u && git status
+	b = !git branch
+	rb = !git branch -r
+	getbranches = !git checkout master && git remote show origin
+	getbranch = !\"git checkout -b $1 origin/$1\"
+	lga = log --graph --oneline --all --decorate
+	lf = show --pretty=\"format:\" --name-only
+
+[user]
+    email = {{git_email}}
+    name = {{git_user_real_name}}
+
+[core]
+    excludesfile = ~/.gitignore_global

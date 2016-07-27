@@ -1,0 +1,34 @@
+---
+- hosts: all
+  tasks:
+    - name: (apt) Updating apt cache
+      apt: update_cache=yes
+      become: yes
+      become_method: sudo
+      when: ansible_pkg_mgr == "apt"
+
+    - name: (apt) Updating dist packages
+      apt: upgrade=dist
+      become: yes
+      become_method: sudo
+      when: ansible_pkg_mgr == "apt"
+
+    - name: (yum) Upgrade all packages
+      yum: name=* state=latest
+      become: yes
+      become_method: sudo
+      when: ansible_pkg_mgr == "yum"
+
+    - name: (dnf) Upgrade all packages
+      dnf: name=* state=latest
+      become: yes
+      become_method: sudo
+      when: ansible_pkg_mgr == "dnf"
+
+    - name: (homebrew) Upgrade homebrew
+      homebrew: update_homebrew=yes
+      when: ansible_pkg_mgr == "homebrew"
+
+    - name: (homebrew) Upgrade all packages
+      homebrew: upgrade_all=yes
+      when: ansible_pkg_mgr == "homebrew"
